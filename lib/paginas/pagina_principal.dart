@@ -13,7 +13,20 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
   List tareasLista = [
     {"titulo": "Tarea 1", "valor": false},
     {"titulo": "Tarea 2", "valor": true},
+    {"titulo": "Tarea 3", "valor": true},
   ];
+
+  void cambiaCheckbox(bool v_checkbox, int posLista) {
+    setState(() {
+      tareasLista[posLista]["valor"] = !tareasLista[posLista]["valor"];
+    });
+  }
+
+  void accionBorrarTarea(int posLista) {
+    setState(() {
+      tareasLista.removeAt(posLista);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +55,11 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
           return ItemTarea(
             textotarea: tareasLista[index]["titulo"],
             valorCheckbox: tareasLista[index]["valor"],
+            cambiaValorCheckbox: (v_checkbox) => cambiaCheckbox(
+              tareasLista[index]["valor"],
+              index,
+            ),
+            borrarTarea: (valor) => accionBorrarTarea(index),
           );
         },
       ),
