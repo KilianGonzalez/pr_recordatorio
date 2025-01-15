@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pr_recordatorio/componentes/dialog_nueva_tarea.dart';
 import 'package:pr_recordatorio/componentes/item_tarea.dart';
 
 class PaginaPrincipal extends StatefulWidget {
@@ -16,6 +17,19 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
     {"titulo": "Tarea 3", "valor": true},
   ];
 
+  TextEditingController tecTextoTarea = TextEditingController();
+
+  void accionGuardar() {
+    setState(() {
+      tareasLista.add({"titulo" : tecTextoTarea.text, "valor" : false});
+    });
+  }
+
+  void accionCancelar() {
+    Navigator.of(context).pop();
+    tecTextoTarea.clear();
+  }
+
   void cambiaCheckbox(bool v_checkbox, int posLista) {
     setState(() {
       tareasLista[posLista]["valor"] = !tareasLista[posLista]["valor"];
@@ -26,6 +40,19 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
     setState(() {
       tareasLista.removeAt(posLista);
     });
+  }
+
+  void crearNuevaTarea() {
+    showDialog(
+      context: context, 
+      builder: (context){
+        return DialogNuevaTarea(
+          tecTextoTarea: tecTextoTarea,
+          accionGuardar: accionGuardar,
+          accionCancelar: accionCancelar,
+        );
+      },
+    );
   }
 
   @override
@@ -44,7 +71,7 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.teal[300],
         shape: const CircleBorder(),
-        onPressed: () {},
+        onPressed: crearNuevaTarea,
         child: Icon(Icons.add, color: Colors.green[800]),
       ),
 
