@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:pr_recordatorio/componentes/dialog_nueva_tarea.dart';
 import 'package:pr_recordatorio/componentes/item_tarea.dart';
+import 'package:pr_recordatorio/data/bbdd.dart';
 
 class PaginaPrincipal extends StatefulWidget {
   const PaginaPrincipal({super.key});
@@ -11,18 +13,22 @@ class PaginaPrincipal extends StatefulWidget {
 
 class _PaginaPrincipalState extends State<PaginaPrincipal> {
 
-  List tareasLista = [
+  /*List tareasLista = [
     {"titulo": "Tarea 1", "valor": false},
     {"titulo": "Tarea 2", "valor": true},
     {"titulo": "Tarea 3", "valor": true},
-  ];
+  ];*/
+
+  final Box _boxHive = Hive.box("box_tareas_app");
+  Bbdd db = Bbdd();
 
   TextEditingController tecTextoTarea = TextEditingController();
 
   void accionGuardar() {
     setState(() {
-      tareasLista.add({"titulo" : tecTextoTarea.text, "valor" : false});
+      db.tareasLista.add({"titulo" : tecTextoTarea.text, "valor" : false});
     });
+    db.actualizarDatos();
   }
 
   void accionCancelar() {
@@ -32,14 +38,16 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
 
   void cambiaCheckbox(bool v_checkbox, int posLista) {
     setState(() {
-      tareasLista[posLista]["valor"] = !tareasLista[posLista]["valor"];
+      db.tareasLista[posLista]["valor"] = !db.tareasLista[posLista]["valor"];
     });
+    db.actualizarDatos();
   }
 
   void accionBorrarTarea(int posLista) {
     setState(() {
-      tareasLista.removeAt(posLista);
+      db.tareasLista.removeAt(posLista);
     });
+    db.actualizarDatos();
   }
 
   void crearNuevaTarea() {
@@ -77,13 +85,13 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
 
       // Body
       body: ListView.builder(
-        itemCount: tareasLista.length,
+        itemCount: db.tareasLista.length,
         itemBuilder: (context, index) {
           return ItemTarea(
-            textotarea: tareasLista[index]["titulo"],
-            valorCheckbox: tareasLista[index]["valor"],
+            textotarea: db.tareasLista[index]["titulo"],
+            valorCheckbox: db.tareasLista[index]["valor"],
             cambiaValorCheckbox: (v_checkbox) => cambiaCheckbox(
-              tareasLista[index]["valor"],
+              db.tareasLista[index]["valor"],
               index,
             ),
             borrarTarea: (valor) => accionBorrarTarea(index),
